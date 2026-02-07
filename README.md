@@ -2,7 +2,7 @@
 
 A blazing fast, browser-based tool to generate high-quality social media sharing cards for [Otaku Bangla](https://www.otakubangla.com).
 
-![Tool Preview](./logo.png)
+![Tool Preview](./screenshot1.jpg)
 
 ## ✨ Features
 
@@ -39,7 +39,7 @@ Simply download the `index.html` file and open it in any modern browser (Chrome,
 
 ## ⚙️ Configuration
 
-- **Logo:** The tool looks for a `logo.png` file in the root directory. Replace the default file with your own transparent PNG logo.
+- **Logo:** The tool looks for a `obmobilelogo.png` file in the root directory. Replace the default file with your own transparent PNG logo.
 - **Defaults:** You can edit the `index.html` file to change the default placeholder text and images if needed.
 
 ## 💻 Tech Stack
@@ -49,5 +49,7 @@ Simply download the `index.html` file and open it in any modern browser (Chrome,
 - **html2canvas** (DOM rendering engine)
 
 ---
+
+This project is live on Netlify: [https://obpcard.netlify.app/]
 
 *Built for the Otaku Bangla Team.*
