@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Otaku Social Card Tool</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #ff4757;
+            --primary-dark: #ff6b81;
+            --accent: #ffeaa7;
+            --bg-page: #dfe6e9;
+            --bg-panel: #ffffff;
+            --text-main: #2d3436;
+            --border: #b2bec3;
+        }
+
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- LAYOUT --- */
+        .app-container { display: flex; width: 100%; height: 100%; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 400px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; z-index: 20;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border); background: #fff; }
+        .sidebar-header h2 { margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--text-main); display: flex; gap: 10px; align-items: center; }
+        .sidebar-header i { color: var(--primary); }
+
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 1.5rem; }
+
+        /* --- INPUTS --- */
+        .input-group { margin-bottom: 1.5rem; }
+        label { display: flex; gap: 8px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; color: #636e72; margin-bottom: 0.5rem; }
+        label i { color: var(--primary); }
+
+        input[type="text"], textarea, .file-upload-wrapper {
+            width: 100%; padding: 0.8rem; border: 2px solid #dfe6e9; border-radius: 8px;
+            font-family: 'Inter', sans-serif; font-size: 0.95rem; transition: 0.2s; background: #fdfdfd; color: var(--text-main);
+        }
+        textarea { font-family: 'Hind Siliguri', sans-serif; min-height: 100px; resize: vertical; }
+        input:focus, textarea:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(255, 71, 87, 0.1); }
+
+        /* File Upload */
+        .file-upload-wrapper { position: relative; padding: 0; overflow: hidden; display: flex; align-items: center; cursor: pointer; }
+        input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
+        .file-custom-btn { padding: 0.8rem; width: 100%; display: flex; justify-content: space-between; color: #636e72; font-weight: 500; }
+
+        /* Sliders */
+        .slider-container { background: #f1f2f6; padding: 1rem; border-radius: 8px; border: 1px solid #dfe6e9; }
+        .slider-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 0.8rem; font-weight: 600; color: #636e72; }
+        input[type="range"] { width: 100%; height: 6px; background: #ced6e0; border-radius: 5px; appearance: none; }
+        input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; background: var(--primary); border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        /* Helper Box */
+        .helper-box { background: #fff0f1; border: 1px solid #ffccd0; border-radius: 6px; padding: 0.8rem; margin-top: 0.5rem; font-size: 0.8rem; color: #d63031; }
+        .helper-box code { background: #fff; padding: 2px 5px; border-radius: 4px; border: 1px solid #ffccd0; font-family: monospace; font-weight: 700; color: #ff4757; }
+
+        /* Save Button */
+        .action-bar { padding: 1.5rem; background: #fff; border-top: 1px solid var(--border); }
+        #downloadBtn {
+            width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 50px;
+            font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3); transition: 0.2s;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        #downloadBtn:active { transform: scale(0.98); }
+
+        /* --- PREVIEW STAGE --- */
+        .main-stage {
+            flex: 1; background: #2d3436; display: flex; justify-content: center; align-items: center; padding: 40px; overflow: hidden;
+            position: relative;
+        }
+        #preview-wrapper { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden; }
+
+        /* --- CARD DESIGN --- */
+        .card-canvas {
+            width: 1080px; height: 1080px; background-color: #000; position: relative; overflow: hidden; transform-origin: top left;
+        }
+
+        /* Layers */
+        #bg-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        
+        /* OVERLAY */
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(
+                to bottom, 
+                rgba(0,0,0,0.5) 0%,   
+                rgba(0,0,0,0.2) 20%,  
+                rgba(0,0,0,0) 40%,    
+                rgba(0,0,0,0.6) 60%,
+                rgba(0,0,0,0.9) 85%,
+                rgba(0,0,0,1) 100%
+            );
+        }
+        .logo-area { position: absolute; top: 50px; left: 50px; z-index: 10; }
+        
+        /* LOGO HEIGHT 95px */
+        #card-logo { 
+            height: 95px; 
+            width: auto;
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.8)); 
+        }
+
+        /* Content */
+        .content-area {
+            position: absolute; bottom: 80px; left: 0; width: 100%;
+            padding: 50px 60px;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            z-index: 20;
+        }
+
+        .category-pill {
+            background: #ffffff; color: #000000; padding: 8px 30px; border-radius: 50px;
+            font-weight: 700; font-size: 28px; display: inline-block; align-self: flex-start;
+            margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .title-text {
+            font-family: 'Hind Siliguri', sans-serif;
+            font-size: 76px; font-weight: 700; line-height: 1.25;
+            color: #ffeaa7; /* Yellow Default */
+            margin: 0 0 20px 0;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        /* Source / Credit Line */
+        .meta-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 22px; font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 10px;
+        }
+
+        /* Footer */
+        .footer-bar {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 80px;
+            background: #ffeaa7; /* Pastel Yellow */
+            display: flex; justify-content: center; align-items: center;
+            z-index: 30;
+        }
+        .site-url {
+            color: #d63031; /* Red Text */
+            font-size: 30px; font-weight: 700; letter-spacing: 1px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            body { height: auto; overflow: auto; }
+            .app-container { flex-direction: column; }
+            .sidebar { width: 100%; order: 2; border: none; }
+            .main-stage { height: 400px; order: 1; padding: 15px; background: #2d3436; }
+            .sidebar-header { display: none; }
+            .sidebar-content { padding-bottom: 100px; }
+            .action-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-paintbrush"></i> Otaku Card Tool</h2>
+            </div>
+            <div class="sidebar-content">
+                <div class="input-group">
+                    <label><i class="fas fa-image"></i> Background Image</label>
+                    <div class="file-upload-wrapper">
+                        <div class="file-custom-btn"><span>Choose file...</span> <i class="fas fa-upload"></i></div>
+                        <input type="file" id="imgInput" accept="image/*">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-arrows-alt"></i> Image Position</label>
+                    <div class="slider-container">
+                        <div class="slider-row"><span>Horizontal</span> <input type="range" id="posX" min="0" max="100" value="50"></div>
+                        <div class="slider-row"><span>Vertical</span> <input type="range" id="posY" min="0" max="100" value="50"></div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-star"></i> Logo</label>
+                    <div class="file-upload-wrapper">
+                        <div class="file-custom-btn"><span>Default Logo</span> <i class="fas fa-upload"></i></div>
+                        <input type="file" id="logoInput" accept="image/*">
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #dfe6e9; margin: 2rem 0;">
+
+                <div class="input-group">
+                    <label><i class="fas fa-tag"></i> Category</label>
+                    <input type="text" id="catInput" value="সংবাদ">
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-font"></i> Title</label>
+                    <textarea id="titleInput">কেন <span style="color:#ff6b81">নারুতো</span> সবার সেরা শোনেন অ্যানিমে</textarea>
+                    <div class="helper-box"><i class="fas fa-info-circle"></i> Use <code>&lt;span style="color:#ff6b81"&gt;text&lt;/span&gt;</code> for pink text.</div>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-copyright"></i> Source / Image Credit</label>
+                    <input type="text" id="metaInput" value="SOURCE: Official Website | IMAGE: Masashi Kishimoto, Scott/Shueisha, TV Tokyo, Pierrot">
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button id="downloadBtn"><i class="fas fa-download"></i> Download Image</button>
+            </div>
+        </div>
+
+        <div class="main-stage" id="stage">
+            <div id="preview-wrapper">
+                <div class="card-canvas" id="card">
+                    <img id="bg-image" src="https://images.unsplash.com/photo-1674448417295-088682b6adec?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" crossorigin="anonymous">
+                    <div class="overlay"></div>
+                    
+                    <div class="logo-area">
+                        <img id="card-logo" src="./obmobilelogo.png" onerror="this.src='https://www.otakubangla.com/wp-content/uploads/2024/03/obmobilelogo.png'" alt="Logo">
+                    </div>
+
+                    <div class="content-area">
+                        <div class="category-pill" id="previewCat">সংবাদ</div>
+                        <h1 class="title-text" id="previewTitle">
+                            কেন <span style="color:#ff6b81">নারুতো</span> সবার সেরা শোনেন অ্যানিমে
+                        </h1>
+                        <div class="meta-text" id="previewMeta">SOURCE: Official Website | IMAGE: Masashi Kishimoto, Scott/Shueisha, TV Tokyo, Pierrot</div>
+                    </div>
+
+                    <div class="footer-bar">
+                        <span class="site-url">www.otakubangla.com</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        function resizePreview() {
+            const stage = document.getElementById('stage');
+            const wrapper = document.getElementById('preview-wrapper');
+            const card = document.getElementById('card');
+            const w = stage.clientWidth - 30;
+            const h = stage.clientHeight - 30;
+            const size = Math.min(w, h); 
+            wrapper.style.width = size + "px";
+            wrapper.style.height = size + "px";
+            const scale = size / 1080;
+            card.style.transform = `scale(${scale})`;
+        }
+        window.addEventListener('load', resizePreview);
+        window.addEventListener('resize', resizePreview);
+
+        // Inputs
+        document.getElementById('catInput').addEventListener('input', e => document.getElementById('previewCat').innerText = e.target.value);
+        document.getElementById('titleInput').addEventListener('input', e => document.getElementById('previewTitle').innerHTML = e.target.value);
+        document.getElementById('metaInput').addEventListener('input', e => document.getElementById('previewMeta').innerText = e.target.value);
+
+        // Files
+        const bgImg = document.getElementById('bg-image');
+        document.getElementById('imgInput').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                e.target.parentElement.querySelector('span').innerText = e.target.files[0].name;
+                const reader = new FileReader();
+                reader.onload = function(evt) { bgImg.src = evt.target.result; };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+        document.getElementById('logoInput').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(evt) { document.getElementById('card-logo').src = evt.target.result; };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // Position
+        const px = document.getElementById('posX');
+        const py = document.getElementById('posY');
+        function moveBg() { bgImg.style.objectPosition = `${px.value}% ${py.value}%`; }
+        px.addEventListener('input', moveBg);
+        py.addEventListener('input', moveBg);
+
+        // Download
+        document.getElementById('downloadBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('downloadBtn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            const originalCard = document.getElementById('card');
+            const clone = originalCard.cloneNode(true);
+            clone.style.transform = "none";
+            clone.style.position = "fixed"; clone.style.top = "-9999px"; clone.style.left = "-9999px"; clone.style.zIndex = "-1";
+            document.body.appendChild(clone);
+            await new Promise(r => setTimeout(r, 500));
+            try {
+                const canvas = await html2canvas(clone, { scale: 1, useCORS: true, allowTaint: true, backgroundColor: null });
+                const link = document.createElement('a');
+                link.download = `Otaku-News-${Date.now()}.png`;
+                link.href = canvas.toDataURL("image/png");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (err) { alert("Error generating image."); }
+            document.body.removeChild(clone);
+            btn.innerHTML = originalHTML;
+        });
+    </script>
+</body>
+</html>
