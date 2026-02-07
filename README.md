@@ -2,7 +2,7 @@
 
 A blazing fast, browser-based tool to generate high-quality social media sharing cards for [Otaku Bangla](https://www.otakubangla.com).
 
-![Tool Preview](./screenshot1.jpg)
+![Tool Preview](./Screenshot1.jpg)
 
 ## ✨ Features
 
