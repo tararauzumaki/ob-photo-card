@@ -97,9 +97,20 @@
             width: 1080px; height: 1080px; background-color: #000; position: relative; overflow: hidden; transform-origin: top left;
         }
 
-        /* Layers */
-        #bg-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        
+        /* FIXED: Background Image now uses CSS background instead of <img> tag */
+        #bg-image { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-size: cover;
+            background-position: 50% 50%;
+            background-repeat: no-repeat;
+            /* Default Image */
+            background-image: url('https://images.unsplash.com/photo-1674448417295-088682b6adec?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+        }
+
         /* OVERLAY */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -180,6 +191,7 @@
 <body>
 
     <div class="app-container">
+        
         <div class="sidebar">
             <div class="sidebar-header">
                 <h2><i class="fas fa-paintbrush"></i> Otaku Card Tool</h2>
@@ -188,7 +200,7 @@
                 <div class="input-group">
                     <label><i class="fas fa-image"></i> Background Image</label>
                     <div class="file-upload-wrapper">
-                        <div class="file-custom-btn"><span>Choose file...</span> <i class="fas fa-upload"></i></div>
+                        <div class="file-custom-btn"><span>Choose file...</span> <i class="fas fa-cloud-upload-alt"></i></div>
                         <input type="file" id="imgInput" accept="image/*">
                     </div>
                 </div>
@@ -236,7 +248,8 @@
         <div class="main-stage" id="stage">
             <div id="preview-wrapper">
                 <div class="card-canvas" id="card">
-                    <img id="bg-image" src="https://images.unsplash.com/photo-1674448417295-088682b6adec?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" crossorigin="anonymous">
+                    <div id="bg-image"></div>
+                    
                     <div class="overlay"></div>
                     
                     <div class="logo-area">
@@ -287,7 +300,10 @@
             if (e.target.files[0]) {
                 e.target.parentElement.querySelector('span').innerText = e.target.files[0].name;
                 const reader = new FileReader();
-                reader.onload = function(evt) { bgImg.src = evt.target.result; };
+                reader.onload = function(evt) { 
+                    // FIXED: Set background image via CSS
+                    bgImg.style.backgroundImage = `url(${evt.target.result})`; 
+                };
                 reader.readAsDataURL(e.target.files[0]);
             }
         });
@@ -302,7 +318,10 @@
         // Position
         const px = document.getElementById('posX');
         const py = document.getElementById('posY');
-        function moveBg() { bgImg.style.objectPosition = `${px.value}% ${py.value}%`; }
+        function moveBg() { 
+            // FIXED: Set background position
+            bgImg.style.backgroundPosition = `${px.value}% ${py.value}%`; 
+        }
         px.addEventListener('input', moveBg);
         py.addEventListener('input', moveBg);
 
