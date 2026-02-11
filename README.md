@@ -1,10 +1,10 @@
-# Otaku Bangla Social Card Generator 🍥
+# Otaku Bangla Social Card Generator
 
 A blazing fast, browser-based tool to generate high-quality social media sharing cards for [Otaku Bangla](https://www.otakubangla.com).
 
 ![Tool Preview](./Screenshot1.jpg)
 
-## ✨ Features
+## Features
 
 - **Anime Aesthetics:** Custom typography and color palette (Pastel Yellow & Anime Red) designed for the Otaku community.
 - **Privacy First:** Runs 100% in the browser. No images or text are uploaded to any server.
@@ -15,7 +15,7 @@ A blazing fast, browser-based tool to generate high-quality social media sharing
   - Highlight keywords in **Pink/Red** using simple HTML tags.
   - Custom source credits.
 
-## 🚀 Usage
+## Usage
 
 1. **Upload Image:** Select a high-quality background image (anime scene, manga panel, or cosplay).
 2. **Set Position:** Use the X/Y sliders to frame the subject perfectly.
@@ -25,7 +25,7 @@ A blazing fast, browser-based tool to generate high-quality social media sharing
    - **Credit:** Add the source or artist credit.
 4. **Download:** Click **Download Image** to save the PNG instantly.
 
-## 🛠 Installation & Deployment
+## Installation & Deployment
 
 ### Local Use
 Simply download the `index.html` file and open it in any modern browser (Chrome, Edge, Safari).
@@ -37,12 +37,12 @@ Simply download the `index.html` file and open it in any modern browser (Chrome,
 4. Hit **Deploy**. 
 5. *(Optional)* Add this tool to your phone's home screen for an app-like experience.
 
-## ⚙️ Configuration
+## Configuration
 
 - **Logo:** The tool looks for a `obmobilelogo.png` file in the root directory. Replace the default file with your own transparent PNG logo.
 - **Defaults:** You can edit the `index.html` file to change the default placeholder text and images if needed.
 
-## 💻 Tech Stack
+## Tech Stack
 
 - **HTML5 / CSS3** (Inter & Hind Siliguri fonts)
 - **JavaScript (Vanilla)**
